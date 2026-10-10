@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://apple.com">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.custom.ASUSTUFA15.USB</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>ASUS-TUF-USB</string>
+	<key>CFBundlePackageType</key>
+	<string>KEXT</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.0</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>1.0.0</string>
+	<key>IOKitPersonalities</key>
+	<dict>
+		<!-- Target AMD Chipset Controller Directly via PCI Matching -->
+		<key>AMD_Rembrandt_XHCI_TUF</key>
+		<dict>
+			<key>CFBundleIdentifier</key>
+			<string>com.apple.driver.AppleUSBHostMergeProperties</string>
+			<key>IOClass</key>
+			<string>AppleUSBHostMergeProperties</string>
+			<key>IOPCIPrimaryMatch</key>
+			<string>0x161d1022</string>
+			<key>IOProviderClass</key>
+			<string>AppleUSBXHCIController</string>
+			<key>IOProviderMergeProperties</key>
+			<dict>
+				<key>port-count</key>
+				<data>BAAAAA==</data>
+				<key>ports</key>
+				<dict>
+					<!-- Physical Port 1 (USB 2.0 Routing) -->
+					<key>HS01</key>
+					<dict>
+						<key>UsbConnector</key>
+						<integer>3</integer>
+						<key>port</key>
+						<data>AQAAAA==</data>
+					</dict>
+					<!-- Physical Port 2 (USB 2.0 Routing) -->
+					<key>HS02</key>
+					<dict>
+						<key>UsbConnector</key>
+						<integer>3</integer>
+						<key>port</key>
+						<data>AgAAAA==</data>
+					</dict>
+					<!-- Physical Port 1 (USB 3.1 SuperSpeed Routing) -->
+					<key>SS01</key>
+					<dict>
+						<key>UsbConnector</key>
+						<integer>3</integer>
+						<key>port</key>
+						<data>AwAAAA==</data>
+					</dict>
+					<!-- Physical Port 2 (USB 3.1 SuperSpeed Routing) -->
+					<key>SS02</key>
+					<dict>
+						<key>UsbConnector</key>
+						<integer>3</integer>
+						<key>port</key>
+						<data>BAAAAA==</data>
+					</dict>
+				</dict>
+			</dict>
+			<key>model</key>
+			<string>MacBookPro16,3</string>
+		</dict>
+	</dict>
+	<!-- CRITICAL: Forces macOS Recovery to execute this driver before storage drivers load -->
+	<key>OSBundleRequired</key>
+	<string>Root</string>
+</dict>
+</plist>
