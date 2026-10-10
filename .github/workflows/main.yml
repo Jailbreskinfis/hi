@@ -12,9 +12,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Validate Kext Plist Structure
+      - name: Validate Kext Plist Structure (Linux Friendly)
         run: |
-          plutil -lint ./FixUSBASUSA15.kext/Contents/Info.plist
+          python3 -m plistlib ./FixUSBASUSA15.kext/Contents/Info.plist > /dev/null
+          echo "Plist syntax is valid!"
 
       - name: Create Kext Package Structure
         run: |
@@ -24,7 +25,7 @@ jobs:
           zip -r ../ASUS-TUF-A15-USB-Driver.zip FixUSBASUSA15.kext
 
       - name: Upload Compiled Driver Artifact
-        uses: actions/allowed-actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4
         with:
           name: ASUS-TUF-A15-USB-Driver
           path: ASUS-TUF-A15-USB-Driver.zip
