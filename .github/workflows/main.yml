@@ -1,0 +1,30 @@
+name: Build Custom ASUS TUF USB Kext
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-13
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Validate Kext Plist Structure
+        run: |
+          plutil -lint ./FixUSBASUSA15.kext/Contents/Info.plist
+
+      - name: Create Kext Package Structure
+        run: |
+          mkdir -p build/
+          cp -R ./FixUSBASUSA15.kext ./build/FixUSBASUSA15.kext
+          cd build
+          zip -r ../ASUS-TUF-A15-USB-Driver.zip FixUSBASUSA15.kext
+
+      - name: Upload Compiled Driver Artifact
+        uses: actions/allowed-actions/upload-artifact@v4
+        with:
+          name: ASUS-TUF-A15-USB-Driver
+          path: ASUS-TUF-A15-USB-Driver.zip
