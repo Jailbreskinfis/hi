@@ -1,31 +1,25 @@
-name: Build Custom ASUS TUF USB Kext
-
-on:
-  push:
-    branches: [ main, master ]
-  workflow_dispatch:
-
+name: build-xhciwatch
+on: { workflow_dispatch: {}, push: {} }
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-14
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Validate Kext Plist Structure (Linux Friendly)
+      - uses: actions/checkout@v4
+      - name: Compile + link kext
         run: |
-          python3 -m plistlib ./FixUSBASUSA15.kext/Contents/Info.plist > /dev/null
-          echo "Plist syntax is valid!"
-
-      - name: Create Kext Package Structure
-        run: |
-          mkdir -p build/
-          cp -R ./FixUSBASUSA15.kext ./build/FixUSBASUSA15.kext
-          cd build
-          zip -r ../ASUS-TUF-A15-USB-Driver.zip FixUSBASUSA15.kext
-
-      - name: Upload Compiled Driver Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ASUS-TUF-A15-USB-Driver
-          path: ASUS-TUF-A15-USB-Driver.zip
+          set -eux
+          SDK=$(xcrun --sdk macosx --show-sdk-path)
+          KHDR="$SDK/System/Library/Frameworks/Kernel.framework/Headers"
+          ls -la "$SDK/usr/lib/"libkmod* || true
+          mkdir -p out/XHCIWatch.kext/Contents/MacOS
+          cp Info.plist out/XHCIWatch.kext/Contents/
+          CFLAGS="-arch x86_64 -isysroot $SDK -I$KHDR -fno-builtin -fno-common -fno-exceptions -fapple-kext -mkernel -nostdinc -DKERNEL -DKERNEL_PRIVATE -DDRIVER_PRIVATE -DAPPLE -DNeXT -O2"
+          clang $CFLAGS -c kmod.c -o kmod.o
+          clang++ $CFLAGS -std=c++17 -fno-rtti -nostdinc++ -c XHCIWatch/XHCIWatch/XHCIWatch.cpp -o XHCIWatch.o
+          ld -kext -arch x86_64 -o out/XHCIWatch.kext/Contents/MacOS/XHCIWatch XHCIWatch.o kmod.o -L"$SDK/usr/lib" -lkmod -lkmodc++
+          file out/XHCIWatch.kext/Contents/MacOS/XHCIWatch
+          nm out/XHCIWatch.kext/Contents/MacOS/XHCIWatch | grep -i kmod_info || true
+          codesign -f -s - out/XHCIWatch.kext || true
+          ls -lR out
+      - uses: actions/upload-artifact@v4
+        with: { name: XHCIWatch-kext, path: out }
